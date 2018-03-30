@@ -129,13 +129,19 @@ Test if a request to path `/foo` using `GET` method matches a route:
 eskip-match test routes.eskip -p /foo -m GET
 ```
 
+Specifying headers:
+
+```bash
+eskip-match test routes.eskip -p /foo -H Accept=application/json -H Authorization="Bearer XXX"
+```
+
 Using **verbose output** might help when something doesn't seem to work as expected:
 
 ```bash
 eskip-match test routes.eskip -v -p /foo
 ```
 
-If your routes are using **custom filters** the tool must be informed via a **configuration file** like:
+If your routes are using **custom filters** the tool must be informed via a **configuration file** named `.eskip-match.yml`, eg:
 
 *.eskip-match.yml*
 ```yaml
@@ -144,16 +150,16 @@ customfilters:
   - myCustomFilter2
 ```
 
-And then run the command with `-c` flag:
-
 ```bash
-eskip-match -c .eskip-match.yml test routes.eskip -p /foo
+eskip-match test routes.eskip -p /foo
 ```
 
 > By default the tool will try to load `.eskip-match.yml` in the current working directory, but you can provide a custom location with `-c` global option, eg:
 ```bash
 eskip-match -c config.yml test routes.eskip -p /foo
 ```
+
+
 
 ## License
 
