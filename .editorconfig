@@ -7,5 +7,5 @@ insert_final_newline = true
 charset = utf-8
 
 [**/*.{go,gohtml}]
-indent_style = tab
+indent_style = space
 indent_size = 2
