@@ -1,4 +1,7 @@
-# eskip-match (work in progress)
+# eskip-match
+
+[![Build Status](https://travis-ci.org/rbarilani/eskip-match.svg?branch=master)](https://travis-ci.org/rbarilani/eskip-match)
+[![codecov](https://codecov.io/gh/rbarilani/eskip-match/branch/master/graph/badge.svg)](https://codecov.io/gh/rbarilani/eskip-match)
 
 A package that helps you test [skipper](https://github.com/zalando/skipper) [`.eskip`](https://zalando.github.io/skipper/dataclients/eskip-file/) files routing matching logic.
 
