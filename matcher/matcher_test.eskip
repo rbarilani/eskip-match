@@ -1,0 +1,2 @@
+foo: PathSubtree("/foo") -> <shunt>;
+bar: Path("/bar") -> <shunt>;
