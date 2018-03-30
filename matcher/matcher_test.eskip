@@ -2,3 +2,4 @@ bar: Path("/bar") -> <shunt>;
 foo: PathSubtree("/foo") -> <shunt>;
 foo_get: Method("GET") && Path("/foo") -> <shunt>;
 query_param: QueryParam("q") -> <shunt>;
+customfilter: Path("/customfilter") -> customfilter() -> <shunt>;
