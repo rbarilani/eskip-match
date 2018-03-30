@@ -33,7 +33,7 @@ func newTest(o *Options) cli.Command {
 			conf := config.Load(o.ConfigFile)
 			routesFile := c.Args().First()
 			if routesFile == "" {
-				return fmt.Errorf("A routes file must be provided, usage: `eskip-match test <routes-file>`")
+				return fmt.Errorf("A routes file must be provided")
 			}
 			m, err := matcher.New(&matcher.Options{
 				RoutesFile:    routesFile,

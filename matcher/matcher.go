@@ -25,7 +25,7 @@ type Matcher interface {
 	Test(attributes *RequestAttributes) *eskip.Route
 }
 
-// RequestAttributes implements RequestAttributes
+// RequestAttributes represents an http request to test
 type RequestAttributes struct {
 	Method  string
 	Path    string
