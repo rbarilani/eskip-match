@@ -74,27 +74,14 @@ func (f *matcher) Test(attributes *RequestAttributes) *eskip.Route {
 	req := createHTTPRequest(attributes)
 
 	// find a match
-	rroute, _ := f.routing.Route(req)
+	route, _ := f.routing.Route(req)
 
-	if rroute == nil {
+	if route == nil {
 		return nil
 	}
 
 	// transform literal to pointer to use eskip.Route methods
-	return &eskip.Route{
-		Id:            rroute.Route.Id,
-		Path:          rroute.Route.Path,
-		HostRegexps:   rroute.Route.HostRegexps,
-		PathRegexps:   rroute.Route.PathRegexps,
-		Method:        rroute.Route.Method,
-		Headers:       rroute.Route.Headers,
-		HeaderRegexps: rroute.Route.HeaderRegexps,
-		Predicates:    rroute.Route.Predicates,
-		Filters:       rroute.Route.Filters,
-		Shunt:         rroute.Route.Shunt,
-		BackendType:   rroute.Route.BackendType,
-		Backend:       rroute.Route.Backend,
-	}
+	return &route.Route
 }
 
 func createRouting(dataClients []routing.DataClient, o *Options) *routing.Routing {
