@@ -93,32 +93,13 @@ func TestRoutes(t *testing.T) {
 
 The package provide a binary cli tool: `eskip-match`
 
-```
-NAME:
-   eskip-match - A command line tool that helps you test .eskip files routing matching logic
-
-USAGE:
-   eskip-match [global options] command [command options] [arguments...]
-
-VERSION:
-   0.0.0
-
-COMMANDS:
-     test, t  given a routes file and request attributes, checks if a route match
-     help, h  Shows a list of commands or help for one command
-
-GLOBAL OPTIONS:
-   --config FILE, -c FILE  Load configuration from FILE
-   --help, -h              show help
-   --version, -v           print the version
-```
 ### Commands
 
 ### Test
 
 With `eskip-match test` command you can check if a route matches given specific request attributes.
 
-#### Examples  
+#### Examples
 
 Test if path `/foo` matches a route
 
@@ -129,6 +110,8 @@ eskip-match test routes.eskip -p /foo
 ## License
 
 Copyright 2018 Ruben Barilani
+
+MIT License
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 
