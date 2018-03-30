@@ -173,49 +173,40 @@ func createRouting(dataClients []routing.DataClient, o *Options) *routing.Routin
 		l.Unmute() // unmute skipper logging
 	}
 
-	var routingOptions routing.Options
+	// create a filter registry with the available filter specs registered,
+	// and register the custom filters
+	registry := builtin.MakeRegistry()
+	for _, f := range o.CustomFilters {
+		registry.Register(f)
+	}
 
-	if o != nil {
-		// create a filter registry with the available filter specs registered,
-		// and register the custom filters
-		registry := builtin.MakeRegistry()
-		for _, f := range o.CustomFilters {
-			registry.Register(f)
-		}
+	// create routing
+	// create the proxy instance
+	var mo routing.MatchingOptions
+	if o.IgnoreTrailingSlash {
+		mo = routing.IgnoreTrailingSlash
+	}
 
-		// create routing
-		// create the proxy instance
-		var mo routing.MatchingOptions
-		if o.IgnoreTrailingSlash {
-			mo = routing.IgnoreTrailingSlash
-		}
+	// include bundled custom predicates
+	o.CustomPredicates = append(o.CustomPredicates,
+		source.New(),
+		source.NewFromLast(),
+		interval.NewBetween(),
+		interval.NewBefore(),
+		interval.NewAfter(),
+		cookie.New(),
+		query.New(),
+		traffic.New(),
+		loadbalancer.NewGroup(),
+		loadbalancer.NewMember(),
+	)
 
-		// include bundled custom predicates
-		o.CustomPredicates = append(o.CustomPredicates,
-			source.New(),
-			source.NewFromLast(),
-			interval.NewBetween(),
-			interval.NewBefore(),
-			interval.NewAfter(),
-			cookie.New(),
-			query.New(),
-			traffic.New(),
-			loadbalancer.NewGroup(),
-			loadbalancer.NewMember(),
-		)
-
-		routingOptions = routing.Options{
-			DataClients:     dataClients,
-			Log:             l,
-			FilterRegistry:  registry,
-			MatchingOptions: mo,
-			Predicates:      o.CustomPredicates,
-		}
-	} else {
-		routingOptions = routing.Options{
-			DataClients: dataClients,
-			Log:         l,
-		}
+	routingOptions := routing.Options{
+		DataClients:     dataClients,
+		Log:             l,
+		FilterRegistry:  registry,
+		MatchingOptions: mo,
+		Predicates:      o.CustomPredicates,
 	}
 
 	router := routing.New(routingOptions)
