@@ -118,6 +118,12 @@ func TestRoutes(t *testing.T) {
 				} else if route.Id != s.expectedRouteID {
 					t.Errorf("expected route id to be '%s' but got '%s'\n request: %s %s", s.expectedRouteID, route.Id, req.Method, a.Path)
 				}
+
+				if route != nil {
+					assert.NotEmpty(t, result.PrettyPrintRoute())
+				} else {
+					assert.Empty(t, result.PrettyPrintRoute())
+				}
 			}
 		})
 	}
