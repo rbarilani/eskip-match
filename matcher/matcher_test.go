@@ -69,7 +69,8 @@ func TestRoutes(t *testing.T) {
 			},
 		},
 		{
-			expectNoMatch: true,
+			expectedRouteID: "no-match",
+			expectNoMatch:   true,
 			reqAttributes: []*RequestAttributes{
 				{
 					Path: "/blobblob",
