@@ -21,7 +21,7 @@ bar: Path("/bar") -> http://bar.com
 You can write a `go test` able to check if the matching logic is what you expect, using `eskip-match/matcher` package, for example something like so:
 
 *main_test.go*
-```
+```go
 package main
 
 import (
@@ -114,17 +114,15 @@ GLOBAL OPTIONS:
 ```
 ### Commands
 
-#### Test
+### Test
 
 With `eskip-match test` command you can check if a route matches givend a route file and request attributes passed as arguments.
 
-###### Examples  
-
-**Simple**
+#### Examples  
 
 Test if path `/foo` matches a route
 
-```
+```bash
 eskip-match test routes.eskip -p /foo
 ```
 
