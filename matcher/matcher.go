@@ -159,10 +159,12 @@ func createHTTPRequest(attributes *RequestAttributes) (*http.Request, error) {
 	httpReq := &http.Request{
 		Method: strings.ToUpper(attributes.Method),
 		URL:    u,
+		Header: make(http.Header),
 	}
 	for key, value := range attributes.Headers {
 		httpReq.Header.Set(key, value)
 	}
+
 	return httpReq, nil
 }
 
