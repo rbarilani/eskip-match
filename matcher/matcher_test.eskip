@@ -1,2 +1,3 @@
-foo: PathSubtree("/foo") -> <shunt>;
 bar: Path("/bar") -> <shunt>;
+foo: PathSubtree("/foo") -> <shunt>;
+get_foo: Method("GET") && Path("/foo") -> <shunt>;

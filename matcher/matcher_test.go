@@ -40,6 +40,15 @@ func TestRoutes(t *testing.T) {
 			},
 		},
 		{
+			expectedRouteID: "get_foo",
+			reqAttributes: []*RequestAttributes{
+				{
+					Method: "GET",
+					Path:   "/foo",
+				},
+			},
+		},
+		{
 			expectedRouteID: "bar",
 			reqAttributes: []*RequestAttributes{
 				{

@@ -5,6 +5,7 @@ import (
 	"github.com/rbarilani/eskip-match/config"
 	"github.com/rbarilani/eskip-match/matcher"
 	"github.com/urfave/cli"
+	"strings"
 )
 
 // NewTest creates `test` cli command
@@ -43,7 +44,7 @@ func newTest(o *Options) cli.Command {
 				return err
 			}
 			reqAttrs := &matcher.RequestAttributes{
-				Method: c.String("m"),
+				Method: strings.ToUpper(c.String("m")),
 				Path:   c.String("p"),
 			}
 			route := m.Test(reqAttrs)

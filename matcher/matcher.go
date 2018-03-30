@@ -175,7 +175,8 @@ func createHTTPRequest(attributes *RequestAttributes) *http.Request {
 		Path: attributes.Path,
 	}
 	httpReq := &http.Request{
-		URL: url,
+		Method: attributes.Method,
+		URL:    url,
 	}
 	for key, value := range attributes.Headers {
 		httpReq.Header.Set(key, value)

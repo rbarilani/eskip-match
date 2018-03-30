@@ -58,7 +58,7 @@ func TestRoutes(t *testing.T) {
 				{
 					Path: "/foo",
 				},
-        {
+				{
 					Path: "/foo/1",
 				},
 			},
@@ -101,10 +101,42 @@ With `eskip-match test` command you can check if a route matches given specific 
 
 #### Examples
 
-Test if path `/foo` matches a route
+Test if a request to path `/foo` matches a route:
 
 ```bash
 eskip-match test routes.eskip -p /foo
+```
+
+Test if a request to path `/foo` using `GET` method matches a route:
+
+```bash
+eskip-match test routes.eskip -p /foo -m GET
+```
+
+Using **verbose output** might help when something doesn't seem to work as expected:
+
+```bash
+eskip-match test routes.eskip -v -p /foo
+```
+
+If your routes are using **custom filters** the tool must be informed via a **configuration file** like:
+
+*.eskip-match.yml*
+```yaml
+customfilters:
+  - myCustomFilter1
+  - myCustomFilter2
+```
+
+And then run the command with `-c` flag:
+
+```bash
+eskip-match -c .eskip-match.yml test routes.eskip -p /foo
+```
+
+> By default the tool will try to load `.eskip-match.yml` in the current working directory, but you can provide a custom location with `-c` global option, eg:
+```bash
+eskip-match -c config.yml test routes.eskip -p /foo
 ```
 
 ## License

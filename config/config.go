@@ -17,7 +17,7 @@ func Load(file string) Config {
 
 	if file == "" {
 		// search for default configuration file
-		file = "eskip-match.yml"
+		file = ".eskip-match.yml"
 		if _, err := os.Stat(file); os.IsNotExist(err) {
 			file = ""
 		}
