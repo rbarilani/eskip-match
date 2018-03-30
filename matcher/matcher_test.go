@@ -107,6 +107,17 @@ func TestRoutes(t *testing.T) {
 			},
 		},
 		{
+			expectedRouteID: "foo_header",
+			reqAttributes: []*RequestAttributes{
+				{
+					Path: "/foo",
+					Headers: map[string]string{
+						"Accept": "application/json",
+					},
+				},
+			},
+		},
+		{
 			expectedRouteID: "customfilter",
 			reqAttributes: []*RequestAttributes{
 				{

@@ -1,1 +1,2 @@
 bar: Path("/bar") -> <shunt>;
+bar_header: Path("/bar") && Header("foo", "bar") -> <shunt>;
