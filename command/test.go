@@ -10,17 +10,18 @@ import (
 // NewTest creates `test` cli command
 func NewTest(o *Options) cli.Command {
 	return cli.Command{
-		Name:    "test",
-		Aliases: []string{"t"},
-		Usage:   "given a routes file and request attributes, checks if a route match",
+		Name:      "test",
+		Aliases:   []string{"t"},
+		ArgsUsage: "<ROUTES_FILE>",
+		Usage:     "Given a routes file and request attributes, checks a route matches",
 		Flags: []cli.Flag{
 			cli.StringFlag{
 				Name:  "method, m",
-				Usage: "Specify an http method",
+				Usage: "Specify request `METHOD`",
 			},
 			cli.StringFlag{
 				Name:  "path, p",
-				Usage: "Specify an http path",
+				Usage: "Specify request `PATH`",
 			},
 			cli.BoolFlag{
 				Name:  "verbose, v",
@@ -30,6 +31,9 @@ func NewTest(o *Options) cli.Command {
 		Action: func(c *cli.Context) error {
 			conf := config.Load(o.ConfigFile)
 			routesFile := c.Args().First()
+			if routesFile == "" {
+				return fmt.Errorf("A routes file must be provided, usage: `eskip-match test <routes-file>`")
+			}
 			m, err := matcher.New(&matcher.Options{
 				RoutesFile:    routesFile,
 				CustomFilters: matcher.MockFilters(conf.CustomFilters),
