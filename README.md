@@ -2,6 +2,11 @@
 
 A package that helps you test [skipper](https://github.com/zalando/skipper) [`.eskip`](https://zalando.github.io/skipper/dataclients/eskip-file/) files routing matching logic.
 
+* [Install](#install)
+* [Usage](#usage)
+* [CLI](#cli)
+* [License](#license)
+
 ## Install
 
 ```
