@@ -143,6 +143,29 @@ func (f *matcher) Test(attributes *RequestAttributes) (TestResult, error) {
 	return result, nil
 }
 
+func createHTTPRequest(attributes *RequestAttributes) (*http.Request, error) {
+	if strings.HasPrefix(attributes.Path, "/") == false {
+		attributes.Path = "/" + attributes.Path
+	}
+
+	u, err := url.Parse("http://localhost" + attributes.Path)
+	if err != nil {
+		return nil, err
+	}
+	if attributes.Method == "" {
+		attributes.Method = "GET"
+	}
+
+	httpReq := &http.Request{
+		Method: strings.ToUpper(attributes.Method),
+		URL:    u,
+	}
+	for key, value := range attributes.Headers {
+		httpReq.Header.Set(key, value)
+	}
+	return httpReq, nil
+}
+
 func createRouting(dataClients []routing.DataClient, o *Options) *routing.Routing {
 	l := loggingtest.New()
 
@@ -213,29 +236,6 @@ func createDataClients(path string) ([]routing.DataClient, error) {
 		client,
 	}
 	return DataClients, nil
-}
-
-func createHTTPRequest(attributes *RequestAttributes) (*http.Request, error) {
-	if strings.HasPrefix(attributes.Path, "/") == false {
-		attributes.Path = "/" + attributes.Path
-	}
-
-	u, err := url.Parse("http://localhost" + attributes.Path)
-	if err != nil {
-		return nil, err
-	}
-	if attributes.Method == "" {
-		attributes.Method = "GET"
-	}
-
-	httpReq := &http.Request{
-		Method: strings.ToUpper(attributes.Method),
-		URL:    u,
-	}
-	for key, value := range attributes.Headers {
-		httpReq.Header.Set(key, value)
-	}
-	return httpReq, nil
 }
 
 // MockFilters creates a list of mocked filters givane a list of filterNames
