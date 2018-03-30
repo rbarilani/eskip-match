@@ -76,7 +76,12 @@ func TestRoutes(t *testing.T) {
 	for _, s := range scenarios {
 		t.Run(s.expectedRouteID, func(t *testing.T) {
 			for _, a := range s.reqAttributes {
-				route := tester.Test(a)
+				res, err := tester.Test(a)
+				if(err != nil) {
+					t.Error(err)
+					return
+				}
+				route := res.Route()
 				if route == nil {
 					t.Errorf("expected route id to be '%s' but no match\n request: %s", s.expectedRouteID, a.Path)
 				} else if route.Id != s.expectedRouteID {

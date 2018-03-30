@@ -17,12 +17,21 @@ import (
 	"github.com/zalando/skipper/routing"
 	"net/http"
 	"net/url"
+	"strings"
 	"time"
 )
 
 // Matcher ...
 type Matcher interface {
-	Test(attributes *RequestAttributes) *eskip.Route
+	Test(attributes *RequestAttributes) (TestResult, error)
+}
+
+// TestResult ...
+type TestResult interface {
+	Route() *eskip.Route
+	Request() *http.Request
+	Attributes() *RequestAttributes
+	PrettyPrintRoute() string
 }
 
 // RequestAttributes represents an http request to test
@@ -34,6 +43,37 @@ type RequestAttributes struct {
 
 type matcher struct {
 	routing *routing.Routing
+}
+
+type testResult struct {
+	route      *eskip.Route
+	req        *http.Request
+	attributes *RequestAttributes
+}
+
+func (t *testResult) Route() *eskip.Route {
+	return t.route
+}
+
+func (t *testResult) Request() *http.Request {
+	return t.req
+}
+
+func (t *testResult) Attributes() *RequestAttributes {
+	return t.attributes
+}
+
+// PrettyPrintRoute return a nice string representation of the resulting route if any
+func (t *testResult) PrettyPrintRoute() string {
+	if t.route == nil {
+		return ""
+	}
+
+	def := t.route.Print(eskip.PrettyPrintInfo{
+		Pretty:    true,
+		IndentStr: "  ",
+	})
+	return fmt.Sprintf("%s: %s\n", t.route.Id, def)
 }
 
 // Options ...
@@ -70,18 +110,37 @@ func New(o *Options) (Matcher, error) {
 
 // Test check if incoming request attributes are matching any eskip route
 // Return is nil if there isn't a match
-func (f *matcher) Test(attributes *RequestAttributes) *eskip.Route {
-	req := createHTTPRequest(attributes)
+func (f *matcher) Test(attributes *RequestAttributes) (TestResult, error) {
+	req, err := createHTTPRequest(attributes)
+
+	if err != nil {
+		return nil, err
+	}
 
 	// find a match
 	route, _ := f.routing.Route(req)
+	var eroute eskip.Route
 
-	if route == nil {
-		return nil
+	if route != nil {
+		eroute = route.Route
+	}
+
+	if eroute.Id == "" {
+		return &testResult{
+			nil,
+			req,
+			attributes,
+		}, nil
+	}
+
+	result := &testResult{
+		&eroute,
+		req,
+		attributes,
 	}
 
 	// transform literal to pointer to use eskip.Route methods
-	return &route.Route
+	return result, nil
 }
 
 func createRouting(dataClients []routing.DataClient, o *Options) *routing.Routing {
@@ -156,19 +215,27 @@ func createDataClients(path string) ([]routing.DataClient, error) {
 	return DataClients, nil
 }
 
-func createHTTPRequest(attributes *RequestAttributes) *http.Request {
-	// create http request
-	url := &url.URL{
-		Path: attributes.Path,
+func createHTTPRequest(attributes *RequestAttributes) (*http.Request, error) {
+	if strings.HasPrefix(attributes.Path, "/") == false {
+		attributes.Path = "/" + attributes.Path
 	}
+
+	u, err := url.Parse("http://localhost" + attributes.Path)
+	if err != nil {
+		return nil, err
+	}
+	if attributes.Method == "" {
+		attributes.Method = "GET"
+	}
+
 	httpReq := &http.Request{
-		Method: attributes.Method,
-		URL:    url,
+		Method: strings.ToUpper(attributes.Method),
+		URL:    u,
 	}
 	for key, value := range attributes.Headers {
 		httpReq.Header.Set(key, value)
 	}
-	return httpReq
+	return httpReq, nil
 }
 
 // MockFilters creates a list of mocked filters givane a list of filterNames
@@ -180,13 +247,4 @@ func MockFilters(filterNames []string) []filters.Spec {
 		}
 	}
 	return fs
-}
-
-// PrettyPrintRoute return a nice string representation of a route
-func PrettyPrintRoute(r *eskip.Route) string {
-	def := r.Print(eskip.PrettyPrintInfo{
-		Pretty:    true,
-		IndentStr: "  ",
-	})
-	return fmt.Sprintf("%s: %s\n", r.Id, def)
 }

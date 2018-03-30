@@ -5,6 +5,7 @@ import (
 	"github.com/rbarilani/eskip-match/config"
 	"github.com/rbarilani/eskip-match/matcher"
 	"github.com/urfave/cli"
+	"log"
 	"strings"
 )
 
@@ -47,13 +48,17 @@ func newTest(o *Options) cli.Command {
 				Method: strings.ToUpper(c.String("m")),
 				Path:   c.String("p"),
 			}
-			route := m.Test(reqAttrs)
-
+			res, err := m.Test(reqAttrs)
+			log.Printf("request: %s %s", res.Attributes().Method, res.Attributes().Path)
+			if err != nil {
+				return err
+			}
+			route := res.Route()
 			if route == nil {
 				return fmt.Errorf("no match")
 			}
-
-			fmt.Print(matcher.PrettyPrintRoute(route))
+			log.Println("matching route id:", route.Id)
+			log.Printf("matching route:\n```\n%s```", res.PrettyPrintRoute())
 
 			return nil
 		},
