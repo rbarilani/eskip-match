@@ -10,9 +10,29 @@ type Options struct {
 	ConfigFile string
 }
 
+// NewApp creates the cli application
+func NewApp() *cli.App {
+	var configFile string
+	app := cli.NewApp()
+	app.Flags = []cli.Flag{
+		cli.StringFlag{
+			Name:        "config, c",
+			Usage:       "Load configuration from `FILE`",
+			Destination: &configFile,
+		},
+	}
+	app.Name = "eskip-match"
+	app.Usage = "A command line tool that helps you test .eskip files routing matching logic"
+
+	app.Commands = getCommands(&Options{
+		ConfigFile: configFile,
+	})
+	return app
+}
+
 // GetCommands returns cli commands list
-func GetCommands(o *Options) []cli.Command {
+func getCommands(o *Options) []cli.Command {
 	return []cli.Command{
-		NewTest(o),
+		newTest(o),
 	}
 }

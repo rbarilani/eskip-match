@@ -8,7 +8,7 @@ import (
 )
 
 // NewTest creates `test` cli command
-func NewTest(o *Options) cli.Command {
+func newTest(o *Options) cli.Command {
 	return cli.Command{
 		Name:      "test",
 		Aliases:   []string{"t"},

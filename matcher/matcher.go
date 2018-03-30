@@ -183,7 +183,7 @@ func createHTTPRequest(attributes *RequestAttributes) *http.Request {
 	return httpReq
 }
 
-// MockFilters creates a list of mocked filters by name
+// MockFilters creates a list of mocked filters givane a list of filterNames
 func MockFilters(filterNames []string) []filters.Spec {
 	fs := make([]filters.Spec, len(filterNames))
 	for i, filterName := range filterNames {
