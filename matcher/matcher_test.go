@@ -55,9 +55,10 @@ func TestRoutes(t *testing.T) {
 	}
 
 	tester, err := New(&Options{
-		RoutesFile:    routesFile,
-		CustomFilters: MockFilters([]string{"customfilter"}),
-		Verbose:       true,
+		RoutesFile:          routesFile,
+		CustomFilters:       MockFilters([]string{"customfilter"}),
+		Verbose:             true,
+		IgnoreTrailingSlash: true,
 	})
 
 	if err != nil {
@@ -167,9 +168,9 @@ func TestRoutes(t *testing.T) {
 				}
 
 				if route != nil {
-					assert.NotEmpty(t, result.PrettyPrintRoute())
+					assert.NotContains(t, "no match", result.PrettyPrint())
 				} else {
-					assert.Empty(t, result.PrettyPrintRoute())
+					assert.Contains(t, "match", result.PrettyPrint())
 				}
 			}
 		})

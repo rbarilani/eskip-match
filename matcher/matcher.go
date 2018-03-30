@@ -31,7 +31,7 @@ type TestResult interface {
 	Route() *eskip.Route
 	Request() *http.Request
 	Attributes() *RequestAttributes
-	PrettyPrintRoute() string
+	PrettyPrint() string
 }
 
 // RequestAttributes represents an http request to test
@@ -63,8 +63,31 @@ func (t *testResult) Attributes() *RequestAttributes {
 	return t.attributes
 }
 
-// PrettyPrintRoute return a nice string representation of the resulting route if any
-func (t *testResult) PrettyPrintRoute() string {
+// PrettyPrint return a nice string output representing the result
+func (t *testResult) PrettyPrint() string {
+	attrs := t.Attributes()
+	out := []string{}
+	out = append(out, fmt.Sprintf("request: %s %s", attrs.Method, attrs.Path))
+	if len(attrs.Headers) > 0 {
+		pairs := make([]string, 0, len(attrs.Headers))
+		for key, value := range attrs.Headers {
+			pairs = append(pairs, key+"="+value)
+		}
+		out = append(out, fmt.Sprintf("request headers: %s", strings.Join(pairs, ", ")))
+	}
+
+	route := t.Route()
+	if route == nil {
+		out = append(out, "no match")
+	} else {
+		out = append(out, fmt.Sprintf("matching route id: %s", route.Id))
+		out = append(out, fmt.Sprintf("matching route:\n```%s```", t.prettyPrintRoute()))
+	}
+	return strings.Join(out, "\n")
+}
+
+// prettyPrintRoute return a nice string representation of the resulting route if any
+func (t *testResult) prettyPrintRoute() string {
 	if t.route == nil {
 		return ""
 	}

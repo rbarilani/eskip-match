@@ -39,6 +39,7 @@ func newTest(o *Options) cli.Command {
 			if routesFile == "" {
 				return fmt.Errorf("A routes file must be provided")
 			}
+
 			m, err := matcher.New(&matcher.Options{
 				RoutesFile:    routesFile,
 				CustomFilters: matcher.MockFilters(conf.CustomFilters),
@@ -47,32 +48,23 @@ func newTest(o *Options) cli.Command {
 			if err != nil {
 				return err
 			}
-			reqAttrs := &matcher.RequestAttributes{
+
+			res, err := m.Test(&matcher.RequestAttributes{
 				Method:  strings.ToUpper(c.String("m")),
 				Path:    c.String("p"),
 				Headers: headers(c.StringSlice("H")),
-			}
-			res, err := m.Test(reqAttrs)
-			attrs := res.Attributes()
-			log.Printf("request: %s %s", attrs.Method, attrs.Path)
-			if len(attrs.Headers) > 0 {
-				pairs := make([]string, 0, len(attrs.Headers))
-				for key, value := range attrs.Headers {
-					pairs = append(pairs, key+"="+value)
-				}
-				log.Printf("request headers: %s", strings.Join(pairs, ", "))
-			}
-
+			})
 			if err != nil {
 				return err
 			}
 
+			out := res.PrettyPrint()
 			route := res.Route()
 			if route == nil {
-				return fmt.Errorf("no match")
+				return fmt.Errorf(out)
 			}
-			log.Println("matching route id:", route.Id)
-			log.Printf("matching route:\n```\n%s```", res.PrettyPrintRoute())
+
+			log.Println(out)
 
 			return nil
 		},
