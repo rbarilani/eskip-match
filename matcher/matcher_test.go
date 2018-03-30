@@ -6,10 +6,44 @@ import (
 	"testing"
 )
 
-type matcherTestScenario struct {
+type testRoutesScenario struct {
 	expectedRouteID string
 	expectNoMatch   bool
 	reqAttributes   []*RequestAttributes
+}
+
+func TestMatcherError(t *testing.T) {
+	_, err := New(&Options{
+		RoutesFile: "",
+	})
+	assert.Error(t, err)
+}
+
+func TestMacherTestSetHeaders(t *testing.T) {
+	routesFile, err := filepath.Abs("./matcher_test.eskip")
+	if err != nil {
+		t.Error(err)
+		return
+	}
+	tester, err := New(&Options{
+		RoutesFile:    routesFile,
+		CustomFilters: MockFilters([]string{"customfilter"}),
+	})
+
+	assert.NoError(t, err)
+
+	res, err := tester.Test(&RequestAttributes{
+		Method: "POST",
+		Path:   "/foo",
+		Headers: map[string]string{
+			"X-Bar": "bar",
+		},
+	})
+
+	assert.NoError(t, err)
+	assert.NotNil(t, res.Request())
+
+	assert.Equal(t, "bar", res.Request().Header.Get("X-Bar"))
 }
 
 func TestRoutes(t *testing.T) {
@@ -31,7 +65,7 @@ func TestRoutes(t *testing.T) {
 		return
 	}
 
-	scenarios := []matcherTestScenario{
+	scenarios := []testRoutesScenario{
 		{
 			expectedRouteID: "foo",
 			reqAttributes: []*RequestAttributes{
@@ -40,7 +74,7 @@ func TestRoutes(t *testing.T) {
 					Path:   "/foo",
 				},
 				{
-					Method: "POST",
+					Method: "post",
 					Path:   "/foo/1",
 				},
 			},
@@ -49,8 +83,10 @@ func TestRoutes(t *testing.T) {
 			expectedRouteID: "foo_get",
 			reqAttributes: []*RequestAttributes{
 				{
-					Method: "GET",
-					Path:   "/foo",
+					Path: "/foo",
+				},
+				{
+					Path: "foo",
 				},
 			},
 		},

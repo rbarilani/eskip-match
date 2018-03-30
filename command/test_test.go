@@ -2,12 +2,15 @@ package command
 
 import (
 	"flag"
+	"github.com/rbarilani/eskip-match/config"
 	"github.com/urfave/cli"
 	"testing"
 )
 
 func TestNewTest(t *testing.T) {
-	testcommand := newTest(&Options{})
+	testcommand := newTest(&Options{
+		ConfigLoader: config.NewLoader(""),
+	})
 	fn, ok := testcommand.Action.(func(c *cli.Context) error)
 
 	if !ok {
@@ -15,16 +18,46 @@ func TestNewTest(t *testing.T) {
 		return
 	}
 
-	set := flag.NewFlagSet("test", 0)
-	set.Parse([]string{"command_test.eskip"})
-	set.Bool("v", true, "")
-	set.String("p", "/bar", "")
-	ctx := cli.NewContext(nil, set, nil)
-	ctx.Command = testcommand
+	scenarios := []struct {
+		title    string
+		args     []string
+		expError bool
+		setFlags func(*flag.FlagSet)
+	}{
+		{
+			title:    "must provide a routes file error",
+			expError: true,
+			setFlags: func(set *flag.FlagSet) {},
+		},
+		{
+			title:    "routes file doesnt exist",
+			args:     []string{"blue.eskip"},
+			expError: true,
+			setFlags: func(set *flag.FlagSet) {},
+		},
+		{
+			title: "success",
+			args:  []string{"command_test.eskip"},
+			setFlags: func(set *flag.FlagSet) {
+				set.String("p", "/bar", "")
+			},
+		},
+	}
 
-	err := fn(ctx)
+	for _, s := range scenarios {
+		t.Run(s.title, func(t *testing.T) {
+			set := flag.NewFlagSet("test", 0)
+			set.Parse(s.args)
+			s.setFlags(set)
 
-	if err != nil {
-		t.Error(err)
+			ctx := cli.NewContext(nil, set, nil)
+			ctx.Command = testcommand
+
+			err := fn(ctx)
+
+			if s.expError == false && err != nil {
+				t.Error("not expected error occured", err)
+			}
+		})
 	}
 }

@@ -2,7 +2,6 @@ package command
 
 import (
 	"fmt"
-	"github.com/rbarilani/eskip-match/config"
 	"github.com/rbarilani/eskip-match/matcher"
 	"github.com/urfave/cli"
 	"log"
@@ -31,7 +30,7 @@ func newTest(o *Options) cli.Command {
 			},
 		},
 		Action: func(c *cli.Context) error {
-			conf := config.Load(o.ConfigFile)
+			conf := o.ConfigLoader.Load(o.ConfigFile)
 			routesFile := c.Args().First()
 			if routesFile == "" {
 				return fmt.Errorf("A routes file must be provided")
