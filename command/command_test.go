@@ -12,25 +12,41 @@ func TestApp(t *testing.T) {
 	}
 
 	scenarios := []struct {
-		Args     []string
-		ExpError bool
+		title    string
+		args     []string
+		expError bool
 	}{
 		{
-			Args: []string{"eskip-match", "test", "command_test.eskip", "-p", "/bar"},
+			title: "match",
+			args:  []string{"eskip-match", "test", "command_test.eskip", "-p", "/bar"},
 		},
 		{
-			ExpError: true,
-			Args:     []string{"eskip-match", "test", "command_test.eskip", "-p", "/foofoo"},
+			title:    "dont-match",
+			expError: true,
+			args:     []string{"eskip-match", "test", "command_test.eskip", "-p", "/foofoo"},
+		},
+		{
+			title: "headers",
+			args: []string{
+				"eskip-match",
+				"test",
+				"command_test.eskip",
+				"-p", "/bar",
+				"-H",
+				"foo=bar",
+				"-H",
+				"bar=foo",
+			},
 		},
 	}
 
 	for _, s := range scenarios {
-		t.Run(strings.Join(s.Args[:], " "), func(t *testing.T) {
-			err := app.Run(s.Args)
-			if s.ExpError && err == nil {
+		t.Run(strings.Join(s.args[:], ", "), func(t *testing.T) {
+			err := app.Run(s.args)
+			if s.expError && err == nil {
 				t.Error("expecting error but got nil")
 			}
-			if s.ExpError == false && err != nil {
+			if s.expError == false && err != nil {
 				t.Error("expecting match but got error", err)
 			}
 		})

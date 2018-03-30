@@ -24,6 +24,10 @@ func newTest(o *Options) cli.Command {
 				Name:  "path, p",
 				Usage: "Specify request `PATH`",
 			},
+			cli.StringSliceFlag{
+				Name:  "header, H",
+				Usage: "Specify request `HEADER` as key=value pair",
+			},
 			cli.BoolFlag{
 				Name:  "verbose, v",
 				Usage: "Print verbose output",
@@ -44,14 +48,25 @@ func newTest(o *Options) cli.Command {
 				return err
 			}
 			reqAttrs := &matcher.RequestAttributes{
-				Method: strings.ToUpper(c.String("m")),
-				Path:   c.String("p"),
+				Method:  strings.ToUpper(c.String("m")),
+				Path:    c.String("p"),
+				Headers: headers(c.StringSlice("H")),
 			}
 			res, err := m.Test(reqAttrs)
-			log.Printf("request: %s %s", res.Attributes().Method, res.Attributes().Path)
+			attrs := res.Attributes()
+			log.Printf("request: %s %s", attrs.Method, attrs.Path)
+			if len(attrs.Headers) > 0 {
+				pairs := make([]string, 0, len(attrs.Headers))
+				for key, value := range attrs.Headers {
+					pairs = append(pairs, key+"="+value)
+				}
+				log.Printf("request headers: %s", strings.Join(pairs, ", "))
+			}
+
 			if err != nil {
 				return err
 			}
+
 			route := res.Route()
 			if route == nil {
 				return fmt.Errorf("no match")
@@ -62,4 +77,15 @@ func newTest(o *Options) cli.Command {
 			return nil
 		},
 	}
+}
+
+func headers(pairs []string) map[string]string {
+	m := make(map[string]string)
+	for _, pair := range pairs {
+		parts := strings.Split(pair, "=")
+		if len(parts) >= 2 {
+			m[parts[0]] = parts[1]
+		}
+	}
+	return m
 }

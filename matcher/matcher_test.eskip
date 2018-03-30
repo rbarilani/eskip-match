@@ -1,5 +1,6 @@
 bar: Path("/bar") -> <shunt>;
 foo: PathSubtree("/foo") -> <shunt>;
 foo_get: Method("GET") && Path("/foo") -> <shunt>;
+foo_header: Method("GET") && Path("/foo") && Header("Accept", "application/json") -> <shunt>;
 query_param: QueryParam("q") -> <shunt>;
 customfilter: Path("/customfilter") -> customfilter() -> <shunt>;
