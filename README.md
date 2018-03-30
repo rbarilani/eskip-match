@@ -5,7 +5,7 @@ A package that helps you test [skipper](https://github.com/zalando/skipper) [`.e
 ## Install
 
 ```
-go get  github.com/rbarilani/eskip-match/...
+go get github.com/rbarilani/eskip-match/...
 ```
 
 ## Usage
