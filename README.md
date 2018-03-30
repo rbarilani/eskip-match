@@ -116,7 +116,7 @@ GLOBAL OPTIONS:
 
 ### Test
 
-With `eskip-match test` command you can check if a route matches givend a route file and request attributes passed as arguments.
+With `eskip-match test` command you can check if a route matches given specific request attributes.
 
 #### Examples  
 
