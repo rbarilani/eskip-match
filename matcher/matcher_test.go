@@ -1,6 +1,7 @@
 package matcher
 
 import (
+	"github.com/stretchr/testify/assert"
 	"path/filepath"
 	"testing"
 )
@@ -20,8 +21,9 @@ func TestRoutes(t *testing.T) {
 	}
 
 	tester, err := New(&Options{
-		RoutesFile: routesFile,
-		Verbose:    true,
+		RoutesFile:    routesFile,
+		CustomFilters: MockFilters([]string{"customfilter"}),
+		Verbose:       true,
 	})
 
 	if err != nil {
@@ -69,6 +71,14 @@ func TestRoutes(t *testing.T) {
 			},
 		},
 		{
+			expectedRouteID: "customfilter",
+			reqAttributes: []*RequestAttributes{
+				{
+					Path: "/customfilter",
+				},
+			},
+		},
+		{
 			expectedRouteID: "no-match",
 			expectNoMatch:   true,
 			reqAttributes: []*RequestAttributes{
@@ -89,6 +99,10 @@ func TestRoutes(t *testing.T) {
 				}
 				route := result.Route()
 				req := result.Request()
+				attrs := result.Attributes()
+
+				assert.NotNil(t, req)
+				assert.NotNil(t, attrs)
 
 				if s.expectNoMatch == true && route != nil {
 					t.Errorf("request: %s %s shouldn't match but matches route id: %s", req.Method, a.Path, route.Id)
@@ -104,7 +118,6 @@ func TestRoutes(t *testing.T) {
 				} else if route.Id != s.expectedRouteID {
 					t.Errorf("expected route id to be '%s' but got '%s'\n request: %s %s", s.expectedRouteID, route.Id, req.Method, a.Path)
 				}
-
 			}
 		})
 	}
