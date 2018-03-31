@@ -56,7 +56,7 @@ func TestNewTest(t *testing.T) {
 			err := fn(ctx)
 
 			if s.expError == false && err != nil {
-				t.Error("not expected error occurred", err)
+				t.Error("not expected error occured", err)
 			}
 		})
 	}
