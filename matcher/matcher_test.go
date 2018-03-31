@@ -148,9 +148,9 @@ func TestRoutes(t *testing.T) {
 				assert.NotNil(t, attrs)
 
 				if route != nil {
-					assert.NotContains(t, result.PrettyPrint(), "no match")
+					assert.Contains(t, result.PrettyPrint(), "matching")
 				} else {
-					assert.Contains(t, result.PrettyPrint(), "no match")
+					assert.NotContains(t, result.PrettyPrint(), "matching")
 				}
 
 				if s.expectNoMatch == true && route != nil {

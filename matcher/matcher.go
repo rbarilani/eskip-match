@@ -32,6 +32,7 @@ type TestResult interface {
 	Request() *http.Request
 	Attributes() *RequestAttributes
 	PrettyPrint() string
+	PrettyPrintLines() []string
 }
 
 // RequestAttributes represents an http request to test
@@ -65,25 +66,30 @@ func (t *testResult) Attributes() *RequestAttributes {
 
 // PrettyPrint return a nice string output representing the result
 func (t *testResult) PrettyPrint() string {
+	out := t.PrettyPrintLines()
+	return strings.Join(out, "\n")
+}
+
+// PrettyPrintLines like PrettyPrint but return a list of strings
+// representing each line that forms the final output
+func (t *testResult) PrettyPrintLines() []string {
 	attrs := t.Attributes()
 	out := []string{}
 	out = append(out, fmt.Sprintf("request: %s %s", attrs.Method, attrs.Path))
 	if len(attrs.Headers) > 0 {
 		pairs := make([]string, 0, len(attrs.Headers))
 		for key, value := range attrs.Headers {
-			pairs = append(pairs, key+"="+value)
+			pairs = append(pairs, fmt.Sprintf(`"%s"="%s"`, key, value))
 		}
 		out = append(out, fmt.Sprintf("request headers: %s", strings.Join(pairs, ", ")))
 	}
 
 	route := t.Route()
-	if route == nil {
-		out = append(out, "no match")
-	} else {
+	if route != nil {
 		out = append(out, fmt.Sprintf("matching route id: %s", route.Id))
 		out = append(out, fmt.Sprintf("matching route:\n```%s```", t.prettyPrintRoute()))
 	}
-	return strings.Join(out, "\n")
+	return out
 }
 
 // prettyPrintRoute return a nice string representation of the resulting route if any
