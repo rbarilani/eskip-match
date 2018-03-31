@@ -23,7 +23,7 @@ import (
 
 // Matcher ...
 type Matcher interface {
-	Test(attributes *RequestAttributes) (TestResult, error)
+	Test(attributes *RequestAttributes) TestResult
 }
 
 // TestResult ...
@@ -88,10 +88,6 @@ func (t *testResult) PrettyPrint() string {
 
 // prettyPrintRoute return a nice string representation of the resulting route if any
 func (t *testResult) prettyPrintRoute() string {
-	if t.route == nil {
-		return ""
-	}
-
 	def := t.route.Print(eskip.PrettyPrintInfo{
 		Pretty:    true,
 		IndentStr: "  ",
@@ -133,12 +129,8 @@ func New(o *Options) (Matcher, error) {
 
 // Test check if incoming request attributes are matching any eskip route
 // Return is nil if there isn't a match
-func (f *matcher) Test(attributes *RequestAttributes) (TestResult, error) {
-	req, err := createHTTPRequest(attributes)
-
-	if err != nil {
-		return nil, err
-	}
+func (f *matcher) Test(attributes *RequestAttributes) TestResult {
+	req, _ := createHTTPRequest(attributes)
 
 	// find a match
 	route, _ := f.routing.Route(req)
@@ -153,7 +145,7 @@ func (f *matcher) Test(attributes *RequestAttributes) (TestResult, error) {
 			nil,
 			req,
 			attributes,
-		}, nil
+		}
 	}
 
 	result := &testResult{
@@ -163,7 +155,7 @@ func (f *matcher) Test(attributes *RequestAttributes) (TestResult, error) {
 	}
 
 	// transform literal to pointer to use eskip.Route methods
-	return result, nil
+	return result
 }
 
 func createHTTPRequest(attributes *RequestAttributes) (*http.Request, error) {
@@ -171,10 +163,7 @@ func createHTTPRequest(attributes *RequestAttributes) (*http.Request, error) {
 		attributes.Path = "/" + attributes.Path
 	}
 
-	u, err := url.Parse("http://localhost" + attributes.Path)
-	if err != nil {
-		return nil, err
-	}
+	u, _ := url.Parse("http://localhost" + attributes.Path)
 	if attributes.Method == "" {
 		attributes.Method = "GET"
 	}
