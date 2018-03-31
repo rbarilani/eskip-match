@@ -27,7 +27,6 @@ func NewApp() *cli.App {
 	}
 
 	app := cli.NewApp()
-	app.Version = "0.3.1"
 	app.Name = "eskip-match"
 	app.Usage = "A command line tool that helps you test .eskip files routing matching logic"
 
