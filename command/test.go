@@ -49,14 +49,11 @@ func newTest(o *Options) cli.Command {
 				return err
 			}
 
-			res, err := m.Test(&matcher.RequestAttributes{
+			res := m.Test(&matcher.RequestAttributes{
 				Method:  strings.ToUpper(c.String("m")),
 				Path:    c.String("p"),
 				Headers: headers(c.StringSlice("H")),
 			})
-			if err != nil {
-				return err
-			}
 
 			out := res.PrettyPrint()
 			route := res.Route()

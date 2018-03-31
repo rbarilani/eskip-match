@@ -32,7 +32,7 @@ func TestMacherTestSetHeaders(t *testing.T) {
 
 	assert.NoError(t, err)
 
-	res, err := tester.Test(&RequestAttributes{
+	res := tester.Test(&RequestAttributes{
 		Method: "POST",
 		Path:   "/foo",
 		Headers: map[string]string{
@@ -40,9 +40,7 @@ func TestMacherTestSetHeaders(t *testing.T) {
 		},
 	})
 
-	assert.NoError(t, err)
 	assert.NotNil(t, res.Request())
-
 	assert.Equal(t, "bar", res.Request().Header.Get("X-Bar"))
 }
 
@@ -140,17 +138,20 @@ func TestRoutes(t *testing.T) {
 	for _, s := range scenarios {
 		t.Run(s.expectedRouteID, func(t *testing.T) {
 			for _, a := range s.reqAttributes {
-				result, err := tester.Test(a)
-				if err != nil {
-					t.Error(err)
-					return
-				}
+				result := tester.Test(a)
+
 				route := result.Route()
 				req := result.Request()
 				attrs := result.Attributes()
 
 				assert.NotNil(t, req)
 				assert.NotNil(t, attrs)
+
+				if route != nil {
+					assert.NotContains(t, result.PrettyPrint(), "no match")
+				} else {
+					assert.Contains(t, result.PrettyPrint(), "no match")
+				}
 
 				if s.expectNoMatch == true && route != nil {
 					t.Errorf("request: %s %s shouldn't match but matches route id: %s", req.Method, a.Path, route.Id)
@@ -167,11 +168,6 @@ func TestRoutes(t *testing.T) {
 					t.Errorf("expected route id to be '%s' but got '%s'\n request: %s %s", s.expectedRouteID, route.Id, req.Method, a.Path)
 				}
 
-				if route != nil {
-					assert.NotContains(t, "no match", result.PrettyPrint())
-				} else {
-					assert.Contains(t, "match", result.PrettyPrint())
-				}
 			}
 		})
 	}
