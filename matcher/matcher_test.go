@@ -27,8 +27,8 @@ func TestMacherTestSetHeaders(t *testing.T) {
 		return
 	}
 	tester, err := New(&Options{
-		RoutesFile:    routesFile,
-		CustomFilters: MockFilters([]string{"customfilter"}),
+		RoutesFile:  routesFile,
+		MockFilters: []string{"customfilter"},
 	})
 
 	assert.NoError(t, err)
@@ -55,7 +55,7 @@ func TestRoutes(t *testing.T) {
 
 	tester, err := New(&Options{
 		RoutesFile:          routesFile,
-		CustomFilters:       MockFilters([]string{"customfilter"}),
+		MockFilters:         []string{"customfilter"},
 		Verbose:             true,
 		IgnoreTrailingSlash: true,
 	})
