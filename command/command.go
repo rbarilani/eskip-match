@@ -77,9 +77,9 @@ func newTestCommand(o *Options) cli.Command {
 			}
 
 			m, err := matcher.New(&matcher.Options{
-				RoutesFile:    routesFile,
-				CustomFilters: matcher.MockFilters(conf.CustomFilters),
-				Verbose:       c.Bool("v"),
+				RoutesFile:  routesFile,
+				MockFilters: conf.CustomFilters,
+				Verbose:     c.Bool("v"),
 			})
 			if err != nil {
 				return err

@@ -22,21 +22,26 @@ import (
 	"github.com/zalando/skipper/routing"
 )
 
-// Matcher ...
+// Matcher represent
 type Matcher interface {
 	Test(attributes *RequestAttributes) TestResult
 }
 
-// TestResult ...
+// TestResult result of a Matcher.Test operation
 type TestResult interface {
+	// Matching route if there was match nil if not match
 	Route() *eskip.Route
+	// The http request that was used to perform the test
 	Request() *http.Request
+	// Normalized request attributes after test
 	Attributes() *RequestAttributes
+	// Nice string representation
 	PrettyPrint() string
+	// Nice string representation line by line
 	PrettyPrintLines() []string
 }
 
-// RequestAttributes represents an http request to test
+// RequestAttributes represents the http request attributes to test
 type RequestAttributes struct {
 	Method  string
 	Path    string
@@ -102,19 +107,24 @@ func (t *testResult) prettyPrintRoute() string {
 	return fmt.Sprintf("%s: %s\n", t.route.Id, def)
 }
 
-// Options ...
+// Options when creating a NewMatcher
 type Options struct {
 	// Path to a .eskip file defining routes
 	RoutesFile string
 
-	// CustomPredicates if any
+	// CustomPredicates list of of custom Skipper predicate specs
 	CustomPredicates []routing.PredicateSpec
 
-	// CustomFilters if any
+	// CustomFilters lister of custom Skipper filter specs
 	CustomFilters []filters.Spec
 
+	// MockFilters list of custom Skipper filters to mock by name
+	MockFilters []string
+
+	// IgnoreTrailingSlash Skipper option
 	IgnoreTrailingSlash bool
 
+	// Verbose verbose debug output
 	Verbose bool
 }
 
@@ -195,9 +205,10 @@ func createRouting(dataClients []routing.DataClient, o *Options) *routing.Routin
 	}
 
 	// create a filter registry with the available filter specs registered,
-	// and register the custom filters
+	// and register the mock and custom filters
 	registry := builtin.MakeRegistry()
-	for _, f := range o.CustomFilters {
+	customFilters := append(mockFilters(o.MockFilters), o.CustomFilters...)
+	for _, f := range customFilters {
 		registry.Register(f)
 	}
 
@@ -250,8 +261,8 @@ func createDataClients(path string) ([]routing.DataClient, error) {
 	return DataClients, nil
 }
 
-// MockFilters creates a list of mocked filters givane a list of filterNames
-func MockFilters(filterNames []string) []filters.Spec {
+// mockFilters creates a list of mocked filters givane a list of filterNames
+func mockFilters(filterNames []string) []filters.Spec {
 	fs := make([]filters.Spec, len(filterNames))
 	for i, filterName := range filterNames {
 		fs[i] = &filtertest.Filter{
