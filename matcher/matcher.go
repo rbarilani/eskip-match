@@ -22,8 +22,9 @@ import (
 	"github.com/zalando/skipper/routing"
 )
 
-// Matcher represent
+// Matcher helps testing eskip routing logic
 type Matcher interface {
+	// Given request attributes test if a route matches
 	Test(attributes *RequestAttributes) TestResult
 }
 
