@@ -1,8 +1,9 @@
 package config
 
 import (
-	"github.com/jinzhu/configor"
 	"os"
+
+	"github.com/jinzhu/configor"
 )
 
 // DefaultFile default configuration file

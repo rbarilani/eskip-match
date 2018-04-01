@@ -2,6 +2,11 @@ package matcher
 
 import (
 	"fmt"
+	"net/http"
+	"net/url"
+	"strings"
+	"time"
+
 	"github.com/zalando/skipper/eskip"
 	"github.com/zalando/skipper/eskipfile"
 	"github.com/zalando/skipper/filters"
@@ -15,10 +20,6 @@ import (
 	"github.com/zalando/skipper/predicates/source"
 	"github.com/zalando/skipper/predicates/traffic"
 	"github.com/zalando/skipper/routing"
-	"net/http"
-	"net/url"
-	"strings"
-	"time"
 )
 
 // Matcher ...

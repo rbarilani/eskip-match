@@ -22,78 +22,66 @@ Given an `.eskip` file:
 *routes.eskip*
 ```
 foo: Path("/foo") -> http://foo.com
+foo_post: Path("/foo") && Method("POST") -> http://foopost.com
 bar: Path("/bar") -> http://bar.com
 ```
 
-You can write a `go test` able to check if the matching logic is what you expect, using `eskip-match/matcher` package, for example something like so:
+You can write a `go test` able to check if the matching logic is what you expect.
+A simple example: 
 
 *main_test.go*
 ```go
 package main
 
 import (
-	"github.com/rbarilani/eskip-match/matcher"
 	"path/filepath"
 	"testing"
+
+	"github.com/rbarilani/eskip-match/matcher"
 )
 
-type matcherTestScenario struct {
-	expectedRouteID string
-	reqAttributes   []*matcher.RequestAttributes
-}
+func TestReadmeExample(t *testing.T) {
+	m, err := createMatcher()
 
-func TestRoutes(t *testing.T) {
-
-	routesFile, err := filepath.Abs("/.routes.eskip")
 	if err != nil {
-		t.Error(err)
+		t.Fatal(err)
 		return
 	}
-	tester, err := matcher.New(&matcher.Options{
-		RoutesFile:    routesFile
+
+	res := m.Test(&matcher.RequestAttributes{
+		Path:   "/foo",
+		Method: "POST",
+	})
+
+	route := res.Route()
+
+	if route == nil {
+		t.Error("Expect matching but no match")
+		return
+	}
+	if route.Id != "foo_post" {
+		t.Errorf("Expect matching route: %s but got %s", "foo_post", route.Id)
+	}
+}
+
+func createMatcher() (matcher.Matcher, error) {
+	routesFile, err := filepath.Abs("./routes.eskip")
+
+	if err != nil {
+		return nil, err
+	}
+
+	m, err := matcher.New(&matcher.Options{
+		RoutesFile: routesFile,
 	})
 
 	if err != nil {
-		t.Error(err)
-		return
+		return nil, err
 	}
 
-	scenarios := []matcherTestScenario{
-		{
-			expectedRouteID: "foo",
-			reqAttributes: []*matcher.RequestAttributes{
-				{
-					Path: "/foo",
-				},
-				{
-					Path: "/foo/1",
-				},
-			},
-		},
-		{
-			expectedRouteID: "bar",
-			reqAttributes: []*matcher.RequestAttributes{
-				{
-					Path: "/bar",
-				}
-			},
-		},
-	}
-
-	for _, s := range scenarios {
-		t.Run(s.expectedRouteID, func(t *testing.T) {
-			for _, a := range s.reqAttributes {
-				res := tester.Test(a)
-				route := res.Route()
-				if route == nil {
-					t.Errorf("expected route id to be '%s' but no match\n request: %s", s.expectedRouteID, a.Path)
-				} else if route.Id != s.expectedRouteID {
-					t.Errorf("expected route id to be '%s' but got '%s'\n request: %s", s.expectedRouteID, route.Id, a.Path)
-				}
-			}
-		})
-	}
+	return m, nil
 }
+
 
 ```
 
