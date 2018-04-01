@@ -58,7 +58,7 @@ func TestApp(t *testing.T) {
 }
 
 func TestNewTestCommand(t *testing.T) {
-	testcommand := newTestCommand(&Options{
+	testcommand := newTestCommand(&options{
 		ConfigLoader: config.NewLoader(""),
 	})
 	fn, ok := testcommand.Action.(func(c *cli.Context) error)

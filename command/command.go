@@ -11,7 +11,7 @@ import (
 )
 
 // Options configurable options
-type Options struct {
+type options struct {
 	// holds global config file cli flag value
 	ConfigFile string
 
@@ -22,7 +22,7 @@ type Options struct {
 func NewApp() *cli.App {
 	var configFile string
 	loader := config.NewLoader(config.DefaultFile)
-	options := &Options{
+	o := &options{
 		ConfigFile:   configFile,
 		ConfigLoader: loader,
 	}
@@ -40,12 +40,12 @@ func NewApp() *cli.App {
 	}
 
 	app.Commands = []cli.Command{
-		newTestCommand(options),
+		newTestCommand(o),
 	}
 	return app
 }
 
-func newTestCommand(o *Options) cli.Command {
+func newTestCommand(o *options) cli.Command {
 	return cli.Command{
 		Name:      "test",
 		Aliases:   []string{"t"},

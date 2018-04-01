@@ -30,7 +30,7 @@ type Matcher interface {
 
 // TestResult result of a Matcher.Test operation
 type TestResult interface {
-	// Matching route if there was match nil if not match
+	// Matching route if there was match nil if no match
 	Route() *eskip.Route
 	// The http request that was used to perform the test
 	Request() *http.Request
