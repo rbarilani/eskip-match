@@ -1,4 +1,4 @@
-// Package cli holds comman line interface app implementation
+// Package cli holds command line interface app implementation
 // and its subcommands
 package cli
 
