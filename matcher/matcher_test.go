@@ -1,6 +1,7 @@
 package matcher
 
 import (
+	"fmt"
 	"log"
 	"path/filepath"
 	"testing"
@@ -193,7 +194,7 @@ func Example() {
 
 	result := m.Test(&RequestAttributes{
 		Method: "GET",
-		Path:   "/foo",
+		Path:   "/bar",
 		Headers: map[string]string{
 			"Accept": "application/json",
 		},
@@ -202,6 +203,7 @@ func Example() {
 	route := result.Route()
 
 	if route != nil {
-		log.Printf("route id: %s", route.Id)
+		fmt.Println(route.Id)
+		// Output: bar
 	}
 }
