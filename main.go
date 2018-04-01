@@ -9,7 +9,7 @@ import (
 
 func main() {
 	app := cli.NewApp()
-	app.Version = "0.3.1"
+	app.Version = "0.3.2"
 	err := app.Run(os.Args)
 	if err != nil {
 		log.Fatal(err)
