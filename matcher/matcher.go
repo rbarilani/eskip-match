@@ -1,6 +1,5 @@
-// Package eskip-match/matcher expose the main interfaces
+// Package matcher exposes the main interfaces and structs
 // that can be used to test `eskip` routes.
-
 package matcher
 
 import (

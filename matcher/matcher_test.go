@@ -1,6 +1,7 @@
 package matcher
 
 import (
+	"log"
 	"path/filepath"
 	"testing"
 
@@ -21,7 +22,7 @@ func TestMatcherError(t *testing.T) {
 }
 
 func TestMacherTestSetHeaders(t *testing.T) {
-	routesFile, err := filepath.Abs("./matcher_test.eskip")
+	routesFile, err := filepath.Abs("./testdata/routes.eskip")
 	if err != nil {
 		t.Error(err)
 		return
@@ -47,7 +48,7 @@ func TestMacherTestSetHeaders(t *testing.T) {
 
 func TestRoutes(t *testing.T) {
 
-	routesFile, err := filepath.Abs("./matcher_test.eskip")
+	routesFile, err := filepath.Abs("./testdata/routes.eskip")
 	if err != nil {
 		t.Error(err)
 		return
@@ -171,5 +172,36 @@ func TestRoutes(t *testing.T) {
 
 			}
 		})
+	}
+}
+
+func Example() {
+	routesFile, err := filepath.Abs("./testdata/routes.eskip")
+	if err != nil {
+		log.Fatal(err)
+		return
+	}
+
+	m, err := New(&Options{
+		RoutesFile: routesFile,
+	})
+
+	if err != nil {
+		log.Fatal(err)
+		return
+	}
+
+	result := m.Test(&RequestAttributes{
+		Method: "GET",
+		Path:   "/foo",
+		Headers: map[string]string{
+			"Accept": "application/json",
+		},
+	})
+
+	route := result.Route()
+
+	if route != nil {
+		log.Printf("route id: %s", route.Id)
 	}
 }
