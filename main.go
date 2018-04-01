@@ -1,3 +1,6 @@
+// Package eskip-match provides a cli tool and utilities to
+// helps you test Skipper (https://github.com/zalando/skipper)
+// `.eskip` files routing matching logic.
 package main
 
 import (
