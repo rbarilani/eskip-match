@@ -2,10 +2,11 @@ package command
 
 import (
 	"flag"
-	"github.com/rbarilani/eskip-match/config"
-	"github.com/urfave/cli"
 	"strings"
 	"testing"
+
+	"github.com/rbarilani/eskip-match/config"
+	"github.com/urfave/cli"
 )
 
 func TestApp(t *testing.T) {

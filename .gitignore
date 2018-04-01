@@ -1,2 +1,7 @@
+# ide
+.vscode
+debug*
+
+# artifacts
 build
 coverage.txt

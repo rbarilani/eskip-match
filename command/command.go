@@ -2,11 +2,12 @@ package command
 
 import (
 	"fmt"
+	"log"
+	"strings"
+
 	"github.com/rbarilani/eskip-match/config"
 	"github.com/rbarilani/eskip-match/matcher"
 	"github.com/urfave/cli"
-	"log"
-	"strings"
 )
 
 // Options configurable options
