@@ -1,4 +1,4 @@
-package config
+package cli
 
 import (
 	"testing"
@@ -13,12 +13,12 @@ func TestLoader(t *testing.T) {
 	}{
 		{
 			title:               "Load file",
-			file:                "./config_test.yml",
+			file:                "./testdata/config.yml",
 			expCustomFiltersLen: 2,
 		},
 		{
 			title:               "Load default file",
-			defaultFile:         DefaultFile,
+			defaultFile:         configDefaultFile,
 			expCustomFiltersLen: 2,
 		},
 		{
@@ -30,10 +30,10 @@ func TestLoader(t *testing.T) {
 
 	for _, s := range scenarios {
 		t.Run(s.title, func(t *testing.T) {
-			loader := NewLoader(s.defaultFile)
+			loader := newConfigLoader(s.defaultFile)
 			config := loader.Load(s.file)
 			if len(config.CustomFilters) != s.expCustomFiltersLen {
-				t.Errorf("expect CustomFilters to have been populated by %d items", s.expCustomFiltersLen)
+				t.Errorf("expect CustomFilters to have been populated by %d items but got %d", s.expCustomFiltersLen, len(config.CustomFilters))
 			}
 		})
 	}

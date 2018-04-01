@@ -1,11 +1,10 @@
-package command
+package cli
 
 import (
 	"fmt"
 	"log"
 	"strings"
 
-	"github.com/rbarilani/eskip-match/config"
 	"github.com/rbarilani/eskip-match/matcher"
 	"github.com/urfave/cli"
 )
@@ -15,13 +14,13 @@ type options struct {
 	// holds global config file cli flag value
 	ConfigFile string
 
-	ConfigLoader config.Loader
+	ConfigLoader configLoader
 }
 
 // NewApp creates the cli application
 func NewApp() *cli.App {
 	var configFile string
-	loader := config.NewLoader(config.DefaultFile)
+	loader := newConfigLoader(configDefaultFile)
 	o := &options{
 		ConfigFile:   configFile,
 		ConfigLoader: loader,

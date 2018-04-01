@@ -1,11 +1,10 @@
-package command
+package cli
 
 import (
 	"flag"
 	"strings"
 	"testing"
 
-	"github.com/rbarilani/eskip-match/config"
 	"github.com/urfave/cli"
 )
 
@@ -22,19 +21,19 @@ func TestApp(t *testing.T) {
 	}{
 		{
 			title: "match",
-			args:  []string{"eskip-match", "test", "command_test.eskip", "-p", "/bar"},
+			args:  []string{"eskip-match", "test", "testdata/routes.eskip", "-p", "/bar"},
 		},
 		{
 			title:    "dont-match",
 			expError: true,
-			args:     []string{"eskip-match", "test", "command_test.eskip", "-p", "/foofoo"},
+			args:     []string{"eskip-match", "test", "testdata/routes.eskip", "-p", "/foofoo"},
 		},
 		{
 			title: "headers",
 			args: []string{
 				"eskip-match",
 				"test",
-				"command_test.eskip",
+				"testdata/routes.eskip",
 				"-p", "/bar",
 				"-H",
 				"foo=bar",
@@ -59,7 +58,7 @@ func TestApp(t *testing.T) {
 
 func TestNewTestCommand(t *testing.T) {
 	testcommand := newTestCommand(&options{
-		ConfigLoader: config.NewLoader(""),
+		ConfigLoader: newConfigLoader(""),
 	})
 	fn, ok := testcommand.Action.(func(c *cli.Context) error)
 
@@ -87,7 +86,7 @@ func TestNewTestCommand(t *testing.T) {
 		},
 		{
 			title: "success",
-			args:  []string{"command_test.eskip"},
+			args:  []string{"testdata/routes.eskip"},
 			setFlags: func(set *flag.FlagSet) {
 				set.String("p", "/bar", "")
 			},
