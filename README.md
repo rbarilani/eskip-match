@@ -24,7 +24,6 @@ Given an `.eskip` file:
 *routes.eskip*
 ```
 foo: Path("/foo") -> http://foo.com
-foo_post: Path("/foo") && Method("POST") -> http://foopost.com
 bar: Path("/bar") -> http://bar.com
 ```
 
@@ -36,14 +35,15 @@ A simple example:
 package main
 
 import (
-	"path/filepath"
 	"testing"
 
 	"github.com/rbarilani/eskip-match/matcher"
 )
 
-func TestReadmeExample(t *testing.T) {
-	m, err := createMatcher()
+func TestExample(t *testing.T) {
+	m, err := matcher.New(&matcher.Options{
+		RoutesFile: "./routes.eskip",
+	})
 
 	if err != nil {
 		t.Fatal(err)
@@ -51,8 +51,8 @@ func TestReadmeExample(t *testing.T) {
 	}
 
 	res := m.Test(&matcher.RequestAttributes{
-		Path:   "/foo",
-		Method: "POST",
+		Method: "GET",
+		Path:   "/bar",
 	})
 
 	route := res.Route()
@@ -61,30 +61,10 @@ func TestReadmeExample(t *testing.T) {
 		t.Error("Expect matching but no match")
 		return
 	}
-	if route.Id != "foo_post" {
-		t.Errorf("Expect matching route: %s but got %s", "foo_post", route.Id)
+	if route.Id != "bar" {
+		t.Errorf("Expect matching route: %s but got %s", "bar", route.Id)
 	}
 }
-
-func createMatcher() (matcher.Matcher, error) {
-	routesFile, err := filepath.Abs("./routes.eskip")
-
-	if err != nil {
-		return nil, err
-	}
-
-	m, err := matcher.New(&matcher.Options{
-		RoutesFile: routesFile,
-	})
-
-	if err != nil {
-		return nil, err
-	}
-
-	return m, nil
-}
-
-
 ```
 
 ## CLI

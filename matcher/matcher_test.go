@@ -177,14 +177,8 @@ func TestRoutes(t *testing.T) {
 }
 
 func Example() {
-	routesFile, err := filepath.Abs("./testdata/routes.eskip")
-	if err != nil {
-		log.Fatal(err)
-		return
-	}
-
 	m, err := New(&Options{
-		RoutesFile: routesFile,
+		RoutesFile: "./testdata/routes.eskip",
 	})
 
 	if err != nil {
