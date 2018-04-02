@@ -14,7 +14,7 @@ func Test(t *testing.T) {
 	logFatalOriginal := logFatal
 	defer func() { logFatal = logFatalOriginal }()
 
-	scenarios := []struct {
+	tests := []struct {
 		title  string
 		experr bool
 		args   []string
@@ -40,20 +40,20 @@ func Test(t *testing.T) {
 	// mock logFatal
 	logFatal = func(...interface{}) {}
 
-	for _, s := range scenarios {
-		t.Run(s.title, func(t *testing.T) {
-			args := make([]string, 0, len(s.args)+1)
+	for _, tt := range tests {
+		t.Run(tt.title, func(t *testing.T) {
+			args := make([]string, 0, len(tt.args)+1)
 			args = append(args, "eskip-match")
-			args = append(args, s.args...)
+			args = append(args, tt.args...)
 
 			os.Args = args
 			main()
 
-			if exitCode > 0 && !s.experr {
+			if exitCode > 0 && !tt.experr {
 				t.Errorf("expected process exiting with success but an error occurred, exit code is = %d", exitCode)
 			}
 
-			if exitCode == 0 && s.experr {
+			if exitCode == 0 && tt.experr {
 				t.Errorf("expected process exiting with error but got success, exit code is = %d", exitCode)
 			}
 		})

@@ -9,12 +9,6 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-type testRoutesScenario struct {
-	expectedRouteID string
-	expectNoMatch   bool
-	reqAttributes   []*RequestAttributes
-}
-
 func TestMatcherError(t *testing.T) {
 	_, err := New(&Options{
 		RoutesFile: "",
@@ -67,10 +61,14 @@ func TestRoutes(t *testing.T) {
 		return
 	}
 
-	scenarios := []testRoutesScenario{
+	tests := []struct {
+		routeID string
+		nomatch bool
+		attrs   []*RequestAttributes
+	}{
 		{
-			expectedRouteID: "foo",
-			reqAttributes: []*RequestAttributes{
+			routeID: "foo",
+			attrs: []*RequestAttributes{
 				{
 					Method: "POST",
 					Path:   "/foo",
@@ -82,8 +80,8 @@ func TestRoutes(t *testing.T) {
 			},
 		},
 		{
-			expectedRouteID: "foo_get",
-			reqAttributes: []*RequestAttributes{
+			routeID: "foo_get",
+			attrs: []*RequestAttributes{
 				{
 					Path: "/foo",
 				},
@@ -93,24 +91,24 @@ func TestRoutes(t *testing.T) {
 			},
 		},
 		{
-			expectedRouteID: "query_param",
-			reqAttributes: []*RequestAttributes{
+			routeID: "query_param",
+			attrs: []*RequestAttributes{
 				{
 					Path: "/abdc?q=bar",
 				},
 			},
 		},
 		{
-			expectedRouteID: "bar",
-			reqAttributes: []*RequestAttributes{
+			routeID: "bar",
+			attrs: []*RequestAttributes{
 				{
 					Path: "/bar",
 				},
 			},
 		},
 		{
-			expectedRouteID: "foo_header",
-			reqAttributes: []*RequestAttributes{
+			routeID: "foo_header",
+			attrs: []*RequestAttributes{
 				{
 					Path: "/foo",
 					Headers: map[string]string{
@@ -120,17 +118,17 @@ func TestRoutes(t *testing.T) {
 			},
 		},
 		{
-			expectedRouteID: "customfilter",
-			reqAttributes: []*RequestAttributes{
+			routeID: "customfilter",
+			attrs: []*RequestAttributes{
 				{
 					Path: "/customfilter",
 				},
 			},
 		},
 		{
-			expectedRouteID: "no-match",
-			expectNoMatch:   true,
-			reqAttributes: []*RequestAttributes{
+			routeID: "no-match",
+			nomatch: true,
+			attrs: []*RequestAttributes{
 				{
 					Path: "/blobblob",
 				},
@@ -138,9 +136,9 @@ func TestRoutes(t *testing.T) {
 		},
 	}
 
-	for _, s := range scenarios {
-		t.Run(s.expectedRouteID, func(t *testing.T) {
-			for _, a := range s.reqAttributes {
+	for _, tt := range tests {
+		t.Run(tt.routeID, func(t *testing.T) {
+			for _, a := range tt.attrs {
 				result := tester.Test(a)
 
 				route := result.Route()
@@ -156,19 +154,19 @@ func TestRoutes(t *testing.T) {
 					assert.NotContains(t, result.PrettyPrint(), "matching")
 				}
 
-				if s.expectNoMatch == true && route != nil {
+				if tt.nomatch == true && route != nil {
 					t.Errorf("request: %s %s shouldn't match but matches route id: %s", req.Method, a.Path, route.Id)
 					return
 				}
 
-				if s.expectNoMatch == true && route == nil {
+				if tt.nomatch == true && route == nil {
 					return
 				}
 
 				if route == nil {
-					t.Errorf("expected route id to be '%s' but no match\n request: %s %s", s.expectedRouteID, req.Method, a.Path)
-				} else if route.Id != s.expectedRouteID {
-					t.Errorf("expected route id to be '%s' but got '%s'\n request: %s %s", s.expectedRouteID, route.Id, req.Method, a.Path)
+					t.Errorf("expected route id to be '%s' but no match\n request: %s %s", tt.routeID, req.Method, a.Path)
+				} else if route.Id != tt.routeID {
+					t.Errorf("expected route id to be '%s' but got '%s'\n request: %s %s", tt.routeID, route.Id, req.Method, a.Path)
 				}
 
 			}
