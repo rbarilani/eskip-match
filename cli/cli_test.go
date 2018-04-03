@@ -2,7 +2,6 @@ package cli
 
 import (
 	"flag"
-	"strings"
 	"testing"
 
 	"github.com/urfave/cli"
@@ -14,22 +13,22 @@ func TestApp(t *testing.T) {
 		t.Error("NewApp return nil")
 	}
 
-	scenarios := []struct {
-		title    string
-		args     []string
-		expError bool
+	tests := []struct {
+		name string
+		args []string
+		err  bool
 	}{
 		{
-			title: "match",
-			args:  []string{"eskip-match", "test", "testdata/routes.eskip", "-p", "/bar"},
+			name: "match",
+			args: []string{"eskip-match", "test", "testdata/routes.eskip", "-p", "/bar"},
 		},
 		{
-			title:    "dont-match",
-			expError: true,
-			args:     []string{"eskip-match", "test", "testdata/routes.eskip", "-p", "/foofoo"},
+			name: "dont-match",
+			err:  true,
+			args: []string{"eskip-match", "test", "testdata/routes.eskip", "-p", "/foofoo"},
 		},
 		{
-			title: "headers",
+			name: "headers",
 			args: []string{
 				"eskip-match",
 				"test",
@@ -43,13 +42,13 @@ func TestApp(t *testing.T) {
 		},
 	}
 
-	for _, s := range scenarios {
-		t.Run(strings.Join(s.args[:], ", "), func(t *testing.T) {
-			err := app.Run(s.args)
-			if s.expError && err == nil {
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			err := app.Run(tt.args)
+			if tt.err && err == nil {
 				t.Error("expecting error but got nil")
 			}
-			if s.expError == false && err != nil {
+			if tt.err == false && err != nil {
 				t.Error("expecting match but got error", err)
 			}
 		})
@@ -67,44 +66,44 @@ func TestNewTestCommand(t *testing.T) {
 		return
 	}
 
-	scenarios := []struct {
-		title    string
+	tests := []struct {
+		name     string
 		args     []string
-		expError bool
+		err      bool
 		setFlags func(*flag.FlagSet)
 	}{
 		{
-			title:    "must provide a routes file error",
-			expError: true,
+			name:     "must provide a routes file error",
+			err:      true,
 			setFlags: func(set *flag.FlagSet) {},
 		},
 		{
-			title:    "routes file doesnt exist",
+			name:     "routes file doesnt exist",
 			args:     []string{"blue.eskip"},
-			expError: true,
+			err:      true,
 			setFlags: func(set *flag.FlagSet) {},
 		},
 		{
-			title: "success",
-			args:  []string{"testdata/routes.eskip"},
+			name: "success",
+			args: []string{"testdata/routes.eskip"},
 			setFlags: func(set *flag.FlagSet) {
 				set.String("p", "/bar", "")
 			},
 		},
 	}
 
-	for _, s := range scenarios {
-		t.Run(s.title, func(t *testing.T) {
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
 			set := flag.NewFlagSet("test", 0)
-			set.Parse(s.args)
-			s.setFlags(set)
+			set.Parse(tt.args)
+			tt.setFlags(set)
 
 			ctx := cli.NewContext(nil, set, nil)
 			ctx.Command = testcommand
 
 			err := fn(ctx)
 
-			if s.expError == false && err != nil {
+			if tt.err == false && err != nil {
 				t.Error("not expected error occurred", err)
 			}
 		})
