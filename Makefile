@@ -6,7 +6,6 @@ GOMODULE   ?= GO111MODULE=on
 default: install test build
 
 install:
-	$(GOMODULE) go get -t -v ./...
 	$(GOMODULE) go get github.com/mitchellh/gox
 
 test:
