@@ -14,7 +14,6 @@ import (
 	"github.com/zalando/skipper/filters"
 	"github.com/zalando/skipper/filters/builtin"
 	"github.com/zalando/skipper/filters/filtertest"
-	"github.com/zalando/skipper/loadbalancer"
 	"github.com/zalando/skipper/logging/loggingtest"
 	"github.com/zalando/skipper/predicates/cookie"
 	"github.com/zalando/skipper/predicates/interval"
@@ -232,8 +231,6 @@ func createRouting(dataClients []routing.DataClient, o *Options) *routing.Routin
 		cookie.New(),
 		query.New(),
 		traffic.New(),
-		loadbalancer.NewGroup(),
-		loadbalancer.NewMember(),
 	)
 
 	routingOptions := routing.Options{
