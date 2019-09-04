@@ -14,7 +14,7 @@ var logFatal = log.Fatal
 
 func main() {
 	app := cli.NewApp()
-	app.Version = "0.3.3"
+	app.Version = "0.4.0"
 	err := app.Run(os.Args)
 	if err != nil {
 		logFatal(err)
